@@ -19,7 +19,7 @@ namespace DungeonExplorer
         }
         public string InventoryContents()
         {
-            return inventory.Count == 0 ? "No items in inventory." : string.Join(", ", inventory);
+            return inventory.Count == 0 ? "Your inventory is empty." : string.Join(", ", inventory);
         }
     }
 }
