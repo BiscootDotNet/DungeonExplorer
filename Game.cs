@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Media;
+using System.Xml.Linq;
 
 namespace DungeonExplorer
 {
@@ -10,41 +11,47 @@ namespace DungeonExplorer
 
         public Game()
         {
-            player = new Player("Hero", 100);
-            currentRoom = new Room("Entrance Hall", "You are standing in a dimly lit hall.");
+            //player = new Player(name, 100);
+            //currentRoom = new Room("Entrance Hall", "You are standing in a dimly lit hall.");
 
         }
         public void Start()
         {
+
+            currentRoom = new Room("Stellar Basement", "You are standing in a dimly lit hall.");
+            player.PickUpItem("Rugged Clothes");
+
+            Console.WriteLine("Welcome to Dungeon Explorer!");
+            Console.WriteLine("\nPress Q to showcase your player's stats in-game.");
+            Console.WriteLine("What is your name, explorer?");
+            string Name = Console.ReadLine();
+            player = new Player(Name, 100);
+
+
             bool playing = true;
             while (playing)
             {
-                Console.Clear();
-                Console.WriteLine("Welcome to Dungeon Explorer!");
-                Console.WriteLine(currentRoom.GetDescription());
-
+                //Console.Clear();
 
                 if (playing == true)
                 {
-                    Console.WriteLine("\nYou stand in a hall, dimly lit and eery. This is the " + currentRoom.GetDescription());
+                    Console.WriteLine("\nWelcome " + Name + ",");
+                    Console.WriteLine("You stand in a hall, dimly lit and eery. This is the " + currentRoom.GetDescription());
                     Console.WriteLine("What would you like to do?");
-                    Console.WriteLine("1. Move to another room");
-                    Console.WriteLine("2. Pick up an item");
-                    Console.WriteLine("3. Check inventory");
-                    Console.WriteLine("4. Quit game");
+                    Console.WriteLine("1. Look Around");
+                    Console.WriteLine("2. Pick up an item"); //check inv
+                    Console.WriteLine("3. Quit game");
                     string input = Console.ReadLine();
                     switch (input)
                     {
                         case "1":
-                            Console.WriteLine("You moved to another room.");
+                            LookAround();
+                            //Console.WriteLine("Input received: " + input);
                             break;
                         case "2":
-                            Console.WriteLine("You picked up an item.");
+                            ItemPickup();
                             break;
                         case "3":
-                            Console.WriteLine("You checked your inventory.");
-                            break;
-                        case "4":
                             Console.WriteLine("You quit the game.");
                             playing = false;
                             break;
@@ -54,6 +61,17 @@ namespace DungeonExplorer
                     }
                 }
             }
+        }
+
+        public void LookAround()
+        {
+            Console.WriteLine("\nYou look around the room and see a door to the north.");
+        }
+
+        public void ItemPickup()
+        {
+            Console.WriteLine("\nYou picked up an item.");
+            player.PickUpItem("Dagger");
         }
     }
 
