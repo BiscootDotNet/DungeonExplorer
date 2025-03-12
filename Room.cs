@@ -4,7 +4,7 @@
     {
         private string description;
 
-        public Room(string description)
+        public Room(string description, string v)
         {
             this.description = description;
         }
@@ -14,4 +14,5 @@
             return description;
         }
     }
+
 }
