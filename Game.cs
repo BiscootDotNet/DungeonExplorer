@@ -138,6 +138,9 @@ namespace DungeonExplorer
 
 
                                     break;
+                                case "2":  //handles the player's choice to return to the room.
+                                    FurtherExplore();
+                                    break;
 
                             }
                             break;
