@@ -5,7 +5,7 @@ using System.Xml.Linq;
 namespace DungeonExplorer
 {
     //main game class, which is responsible for adding the game and room logic.
-    internal class Game
+    internal class Game  //the game class, which is responsible for the game's logic.
     {
         private Player player;  //stores the player object information.
         private Room currentRoom;  //tracks the player's current room.
