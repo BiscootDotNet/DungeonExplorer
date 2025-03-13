@@ -20,7 +20,7 @@ namespace DungeonExplorer
         public void Start()
         {
 
-            currentRoom = new Room("Stellar Basement 1:1", "You are standing in a dimly lit hall.");
+            currentRoom = new Room("STELLAR BASEMENT 1:1", "You are standing in a dimly lit hall.");
 
             Console.WriteLine("Welcome to Dungeon Explorer!");
             Console.WriteLine("What is your name, explorer?");
@@ -34,7 +34,7 @@ namespace DungeonExplorer
 
                 if (playing = true && ItemPickedUp == false)  //this is the main gameplay loop, plays when the game is initialised and the player has not yet collected the item.
                 {
-                    Console.WriteLine(Name + ", You find yourself lonesome, awaking in a dungeon of sorts, with no sign of escape. This is the " + currentRoom.GetDescription());
+                    Console.WriteLine("\n" + Name + ", You find yourself lonesome, awaking in a dungeon of sorts, with no sign of escape. This is " + currentRoom.GetDescription());
                     Console.WriteLine("What would you like to do?");
                     Console.WriteLine("\nQ. Showcase your player's stats.");
                     Console.WriteLine("1. Look around");
@@ -141,9 +141,19 @@ namespace DungeonExplorer
 
                             }
                             break;
+                        case "2":
+                            SeeInventory();
+                            break;
+                        case "3":
+                            Console.WriteLine("You quit the game.");
+                            playing = false;
+                            break;
+                        case "Q":
+                            SeeStats();
+                            break;
 
 
-                            
+
 
                     }
                 }
@@ -167,7 +177,7 @@ namespace DungeonExplorer
                 case "2":  //handles the player's choice to search the remainder of the room.
                     Console.WriteLine("\nYou stand and observe the remainder of your surroundings, finding little more than an eery cobblestone dungeon setting with a singular door leading deeper.");
                     Console.WriteLine("There's no apparent entrance, and you remain confused on how you wound up in such a setting.");
-                    Console.WriteLine("After this closer search, would you now like to collect the dagger?");
+                    Console.WriteLine("\nAfter this closer search, would you now like to collect the dagger?");
                     Console.WriteLine("1. Yes");
                     Console.WriteLine("2. No");
                     string input2 = Console.ReadLine();
@@ -241,22 +251,13 @@ namespace DungeonExplorer
             Console.WriteLine("Name: " + player.Name);
             Console.WriteLine("Health: " + player.Health);
             Console.WriteLine("Inventory: " + player.InventoryContents());
-            Console.WriteLine("Continue?");
-            Console.WriteLine("1. Yes");
-            Console.WriteLine("2. Exit");
+            Console.WriteLine("\nType any key to continue.");
             string input = Console.ReadLine();
             switch (input)
             {
-                case "1":  //handles the player's choice to continue.
+                default:
                     Console.WriteLine("Resuming.");
                     Console.Clear();
-                    break;
-                case "2":  //handles the player's choice to exit the game.
-                    Console.WriteLine("You quit the game.");
-                    Environment.Exit(0);
-                    break;
-                default:
-                    Console.WriteLine("\nInvalid input.");
                     break;
             }
 
@@ -350,17 +351,13 @@ namespace DungeonExplorer
                 case "1":  //calls the function to display the player's inventory.
                     Console.WriteLine("\nInventory");
                     Console.WriteLine(player.InventoryContents());
-                    Console.WriteLine("\nContinue?");
-                    Console.WriteLine("1. Yes");
+                    Console.WriteLine("\ntype any key to continue.");
                     string input2 = Console.ReadLine();
                     switch (input2)
                     {
-                        case "1":  //handles the player's choice to continue.
+                        default:
                             Console.WriteLine("You continue.");
                             Console.Clear();
-                            break;
-                        default:
-                            Console.WriteLine("Invalid input.");
                             break;
                     }
                     break;
