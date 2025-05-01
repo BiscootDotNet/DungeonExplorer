@@ -10,6 +10,7 @@ public class Monsters
     public int defblock { get; set; }
 
     static public Monsters WolflordGhoul { get; set; }
+    static public Monsters MontsroGhoul { get; set; }
 
     public int Defence { get; set; }
     public Monsters(string name, int health, int attack, int defence)
@@ -40,4 +41,5 @@ public class Monsters
             Attackpower = 8;
         }
     }
+
 }

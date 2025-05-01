@@ -448,7 +448,9 @@ namespace DungeonExplorer
         public void MonsterRoom()  //a function which handles the player's choice to enter the monster room.
         {
             Console.Clear();
-            monster = new Monsters("MONSTRO GHOUL", 75, 8, 1);  //INITIALISES a new monster.
+            //monster = new Monsters("MONSTRO GHOUL", 75, 8, 1);  //initialises a new monster.
+            Monsters.MontsroGhoul = new Monsters("Monstro Ghoul", 75, 8, 1);  //sets the monster to the MONSTRO GHOUL.
+            monster = Monsters.MontsroGhoul;  //sets the monster to the MONSTRO GHOUL.
             Room.RightMonsterRoom = new Room("MONSTER ROOM", "You now stand in a dimly lit stone room, with a large monster limping by the back wall.");
             currentRoom = Room.RightMonsterRoom;  //sets the current room to the monster room.
             Console.WriteLine("\nTaking the right exit leads you to a poorly lit stone hall, filled by several empty bookcases.");
@@ -517,7 +519,7 @@ namespace DungeonExplorer
                     Console.WriteLine("You have defeated " + monster.Name + "!");
                     Console.WriteLine("you regain 10 health from a sigh of relief.");
                     player.Health = player.Health + 10;
-                    monster = null;  //sets the monster to null, indicating it has been defeated.
+                    //monster = null;  //sets the monster to null, indicating it has been defeated.
 
 
                     if (Room.currentRoom != Room.RightMonsterRoom)
@@ -684,39 +686,35 @@ namespace DungeonExplorer
                     Console.WriteLine("Such a powerful weapon filled with plenty ammunition, sat here idly, why?");
                     Console.WriteLine("\nWith the whispers still murmuring, you observe the remainder of the room, noticing a group of the previously encountered MONSTRO GHOULS.");
                     Console.WriteLine("They appear to be staring towards the ceiling, where hangs a much larger-looking variant of these creatures - clearly this is their boss.");
-                    if (monster == null)
+                    Monsters.WolflordGhoul = new Monsters("Wolflord Ghoul", 140, 12, 5);  //initialises the boss monster.
+                    monster = Monsters.WolflordGhoul;  //sets the monster to the boss monster.
+                    Console.WriteLine("You should ready yourself for a COMBAT ENCOUNTER.");
+                    Console.WriteLine("\nPress any key to continue.");
+                    string input2 = Console.ReadLine();
+                    switch (input2)
                     {
-                        Monsters.WolflordGhoul = new Monsters("Wolflord Ghoul", 140, 12, 5);  //initialises the boss monster.
-                        Console.WriteLine("You should ready yourself for a COMBAT ENCOUNTER.");
-                        Console.WriteLine("\nPress any key to continue.");
-                        string input2 = Console.ReadLine();
-                        switch (input2)
-                        {
-                            default:
-                                CombatEncounter();
-                                break;
-                        }
+                        default:
+                            CombatEncounter();
+                            break;
                     }
+
                     break;
 
                 case "2":
                     Console.WriteLine("\nYou bypass the crate and continue on.");
                     Console.WriteLine("\nWith the whispers still murmuring, you observe the remainder of the room, noticing a group of the previously encountered MONSTRO GHOULS.");
                     Console.WriteLine("They appear to be staring towards the ceiling, where hangs a much larger-looking variant of these creatures - clearly this is their boss.");
-                    if (monster == null)
+                    Monsters.WolflordGhoul = new Monsters("Wolflord Ghoul", 140, 12, 5);
+                    monster = Monsters.WolflordGhoul;
+                    Console.WriteLine("You should ready yourself for a COMBAT ENCOUNTER.");
+                    Console.WriteLine("\nPress any key to continue.");
+                    string input3 = Console.ReadLine();
+                    switch (input3)
                     {
-                        Monsters.WolflordGhoul = new Monsters("Wolflord Ghoul", 140, 12, 5);
-                        Console.WriteLine("You should ready yourself for a COMBAT ENCOUNTER.");
-                        Console.WriteLine("\nPress any key to continue.");
-                        string input3 = Console.ReadLine();
-                        switch (input3)
-                        {
-                            default:
-                                CombatEncounter();
-                                break;
-                        }
+                        default:
+                            CombatEncounter();
+                            break;
                     }
-
                     break;
 
                 default:
