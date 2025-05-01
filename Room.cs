@@ -4,6 +4,11 @@
     {
         private string description;
 
+        static public Room RightMonsterRoom { get; set; }
+        static public Room LeftStorageRoom { get; set; }
+        static public Room BossRoom { get; set; }
+        static public Room currentRoom { get; set; }
+
         public Room(string description, string v)
         {
             this.description = description;
