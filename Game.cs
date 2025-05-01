@@ -12,9 +12,11 @@ namespace DungeonExplorer
         private Player player;  //stores the player object information.
         private Room currentRoom;  //tracks the player's current room.
         private Monsters monster;  //stores the monster object information.
+        public bool CurrentMonsterBoss = false;  //tracks if the current monster is a boss.
         public bool ItemPickedUp = false;  //tracks if the player has collected the item. True when collected, false when not.
         public bool StorageRoomAccessed = false;  //tracks if the player has accessed the storage room.
         public bool SwordGot = false;  //tracks if the player has collected the sword.
+        public bool SwordEquipped = false;  //tracks if the player has equipped the sword.
         public bool BossRoom = false;  //tracks if the player has accessed the boss room.
 
         public Game()
@@ -26,12 +28,12 @@ namespace DungeonExplorer
         public void Start()
         {
 
-            currentRoom = new Room("STELLAR BASEMENT 1:1", "You are standing in a dimly lit hall.");
+            currentRoom = new Room("UNSETTLED BASEMENT", "You awake lying in a dimly lit cobble room.");
 
             Console.WriteLine("Welcome to Dungeon Explorer!");
             Console.WriteLine("What is your name, explorer?");
             string Name = Console.ReadLine();
-            player = new Player(Name, 100, 5, 0);  //initializes the player object with the player's inputted name and health.
+            player = new Player(Name, 105, 5, 0);  //initializes the player object with the player's inputted name and health.
 
 
             bool playing = true;  //boolean variable to control the game loop.
@@ -290,7 +292,7 @@ namespace DungeonExplorer
         public void DoorAccess()  //a function which handles the player's choice to access the door.
         {
             Console.WriteLine("\nWith careful adjustments to the DAGGER's edge within the keyhole, by some miracle, " + player.Name + " adjusts the lock mechanism perfectly, allowing the door to gradually swing open.");
-            Console.WriteLine("You are met with a flight of cobblestone stairs, leading only to a dark and ominous atmosphere below, though a source of light and the sound of flowing water from the very bottom tempt you down.");
+            Console.WriteLine("You are met with a flight of cobblestone stairs, leading only to a dark and ominous atmosphere below, though a source of light and the sound of echoes from below tempt you down.");
             Console.WriteLine("\nHow will you proceed?");
             Console.WriteLine("1. Descend the stairs");
             Console.WriteLine("2. Return to the room");
@@ -366,7 +368,7 @@ namespace DungeonExplorer
                 StorageRoomAccessed = true;  //sets the boolean to true, indicating the player has accessed the storage room.
                 Room.LeftStorageRoom = new Room("STORAGE ROOM", "You are standing in a dimly lit storage room, with a few crates and chests scattered around.");
                 currentRoom = Room.LeftStorageRoom;  //sets the current room to the storage room.
-                Console.WriteLine("\nYou enter the storage room, and are met with a handful of crates and chests.");
+                Console.WriteLine("You enter the storage room, and are met with a handful of crates and chests.");
                 Console.WriteLine("Many of the crates are poorly maintained, with only a chest or two in the room's centre catching your attention.");
                 Console.WriteLine("You approach the chest, and find it to be locked.");
                 Console.WriteLine("Would you like to search the chest to the right, or force it open with your DAGGER?");
@@ -376,9 +378,10 @@ namespace DungeonExplorer
                 switch (input)
                 {
                     case "1":
-                        Console.WriteLine("\nYou search the next chest, and take 1x SML Health Potion as well as an additonal DAGGER.");
-                        Console.WriteLine("1x SML Health Potion added to your inventory.");
+                        Console.WriteLine("\nYou search the next chest, and take 2x SML Health Potion as well as an additonal DAGGER.");
+                        Console.WriteLine("2x SML Health Potion added to your inventory.");
                         Console.WriteLine("DAGGER added to your inventory.");
+                        player.PickUpItem("SML Health Potion");
                         player.PickUpItem("SML Health Potion");
                         player.PickUpItem("DAGGER");
                         Console.WriteLine("\nWould you like to see your inventory before returning to the corridor?");
@@ -402,12 +405,14 @@ namespace DungeonExplorer
                         Console.WriteLine("\nYou break the lock with your DAGGER, breaking your DAGGER in the process.");
                         player.RemoveItem("DAGGER");
                         Console.WriteLine("Inside, however, lies a SHARP BLADE, which you take as its successor, as well as 1x LRG Health Potion");
-                        Console.WriteLine("SHARP BLADE added to your inventory.");
+                        Console.WriteLine("This blade feels as though it will be strong at COUNTERING surprise or follow-up attacks.");
+                        Console.WriteLine("\nSHARP BLADE added to your inventory.");
                         Console.WriteLine("1x LRG Health Potion added to your inventory.");
                         player.PickUpItem("SHARP BLADE");
                         player.PickUpItem("LRG Health Potion");
-                        Console.WriteLine("You also search the chest to the right and gain 1x SML Health Potion");
+                        Console.WriteLine("You also search the chest to the right and gain 2x SML Health Potion");
                         Console.WriteLine("1x SML Health Potion added to your inventory.");
+                        player.PickUpItem("SML Health Potion");
                         player.PickUpItem("SML Health Potion");
                         Console.WriteLine("\nWould you like to see your inventory before returning to the corridor?");
                         Console.WriteLine("1. Yes");
@@ -448,12 +453,11 @@ namespace DungeonExplorer
         public void MonsterRoom()  //a function which handles the player's choice to enter the monster room.
         {
             Console.Clear();
-            //monster = new Monsters("MONSTRO GHOUL", 75, 8, 1);  //initialises a new monster.
-            Monsters.MontsroGhoul = new Monsters("Monstro Ghoul", 75, 8, 1);  //sets the monster to the MONSTRO GHOUL.
+            Monsters.MontsroGhoul = new Monsters("MONSTRO GHOUL", 75, 8, 1, 0);  //sets the monster to the MONSTRO GHOUL.
             monster = Monsters.MontsroGhoul;  //sets the monster to the MONSTRO GHOUL.
             Room.RightMonsterRoom = new Room("MONSTER ROOM", "You now stand in a dimly lit stone room, with a large monster limping by the back wall.");
             currentRoom = Room.RightMonsterRoom;  //sets the current room to the monster room.
-            Console.WriteLine("\nTaking the right exit leads you to a poorly lit stone hall, filled by several empty bookcases.");
+            Console.WriteLine("Taking the right exit leads you to a poorly lit stone hall, filled by several empty bookcases.");
             Console.WriteLine("Though through the smoggy darkness you notice an approaching figure.");
             Console.WriteLine("You should ready yourself for a COMBAT ENCOUNTER.");
             Console.WriteLine("\nPress any key to continue.");
@@ -490,6 +494,7 @@ namespace DungeonExplorer
                         break;
                     case "3":  //the player's choice to view their inventory.
                         UsePotion();
+                        monster.Attack(player);
                         break;
                     case "4":  //the player's choice to flee.
                         Console.WriteLine("\nThere is nowhere to flee.");
@@ -543,6 +548,20 @@ namespace DungeonExplorer
                     }
 
                 }
+                if (CurrentMonsterBoss == true && monster.Health <=60)
+                {
+                    Console.WriteLine("\n" + monster.Name + " is enraged. ATK, DEF & HP is increased!.");
+                    Console.WriteLine(monster.Name + " launches an additional follow-up attack!");
+                    Monsters.WolflordGhoul.Attackpower = 16;
+                    Monsters.WolflordGhoul.Defence = 8;
+                    monster.FUAattackPlayer(player);
+                    if (SwordEquipped == true)
+                    {
+                        Console.WriteLine("\nWith the blade equipped, you successfully counter " + monster.Name + "'s follow-up ATK, mitigating some DMG!");
+                        player.Health = player.Health + 5;
+                        monster.TakeDamage(player.AttackPower);
+                    }
+                }
             }
 
         }
@@ -564,6 +583,7 @@ namespace DungeonExplorer
                     }
                     else if (SwordGot == false)
                     {
+                        SwordEquipped = false;  //sets the boolean to false, indicating the player has not equipped the sword.
                         Console.WriteLine("\nYou equip your dual DAGGERs");
                         player.AttackPower = 12;
                         Console.WriteLine("Press any key to continue.");
@@ -587,8 +607,9 @@ namespace DungeonExplorer
                     else if (SwordGot == true)
                     {
                         Console.WriteLine("\nYou equip the SHARP BLADE");
-                        player.AttackPower = 18;
+                        player.AttackPower = 17;
                         Console.WriteLine("Press any key to continue.");
+                        SwordEquipped = true;
                         string input2 = Console.ReadLine();
                         switch (input2)
                         {
@@ -601,9 +622,10 @@ namespace DungeonExplorer
                     break;
 
                 case "CROSSBOW":
+                    SwordEquipped = false;
                     Console.WriteLine("\nYou equip the CROSSBOW");
                     player.AttackPower = 20;
-                    monster.Defence = monster.Defence - 2;
+                    monster.Defence = monster.Defence - 3;
                     Console.WriteLine("Press any key to continue.");
                     string input3 = Console.ReadLine();
                     switch (input3)
@@ -634,10 +656,14 @@ namespace DungeonExplorer
             switch (item)
             {
                 case "SML Health Potion":
-                    player.Health = player.Health + 15;
+                    player.Health = player.Health + 28;
                     player.RemoveItem("SML Health Potion");
                     Console.WriteLine("You use the SML Health Potion.");
                     Console.WriteLine("Press any key to continue.");
+                    if (player.Health > 105)
+                    {
+                        player.Health = 105;
+                    }
                     string input2 = Console.ReadLine();
                     switch (input2)
                     {
@@ -647,10 +673,15 @@ namespace DungeonExplorer
                     }
                     break;
                 case "LRG Health Potion":
-                    player.Health = player.Health + 30;
+                    player.Health = player.Health + 45;
                     player.RemoveItem("LRG Health Potion");
                     Console.WriteLine("You use the LRG Health Potion.");
                     Console.WriteLine("Press any key to continue.");
+                    if (player.Health > 105)
+                    {
+                        player.Health = 105;
+                    }
+
                     string input3 = Console.ReadLine();
                     switch (input3)
                     {
@@ -662,7 +693,7 @@ namespace DungeonExplorer
                 default:
                     {
                         Console.WriteLine("No such item is found in your inventory.");
-                        UsePotion();
+                        CombatEncounter();
                         break;
                     }
             }
@@ -686,10 +717,11 @@ namespace DungeonExplorer
                     Console.WriteLine("Such a powerful weapon filled with plenty ammunition, sat here idly, why?");
                     Console.WriteLine("\nWith the whispers still murmuring, you observe the remainder of the room, noticing a group of the previously encountered MONSTRO GHOULS.");
                     Console.WriteLine("They appear to be staring towards the ceiling, where hangs a much larger-looking variant of these creatures - clearly this is their boss.");
-                    Monsters.WolflordGhoul = new Monsters("Wolflord Ghoul", 140, 12, 5);  //initialises the boss monster.
+                    Monsters.WolflordGhoul = new Monsters("WOLFLORD GHOUL", 140, 12, 5, 8);  //initialises the boss monster.
                     monster = Monsters.WolflordGhoul;  //sets the monster to the boss monster.
                     Console.WriteLine("You should ready yourself for a COMBAT ENCOUNTER.");
                     Console.WriteLine("\nPress any key to continue.");
+                    CurrentMonsterBoss = true;  //sets the boolean to true, indicating the current monster is a boss.
                     string input2 = Console.ReadLine();
                     switch (input2)
                     {
@@ -704,10 +736,11 @@ namespace DungeonExplorer
                     Console.WriteLine("\nYou bypass the crate and continue on.");
                     Console.WriteLine("\nWith the whispers still murmuring, you observe the remainder of the room, noticing a group of the previously encountered MONSTRO GHOULS.");
                     Console.WriteLine("They appear to be staring towards the ceiling, where hangs a much larger-looking variant of these creatures - clearly this is their boss.");
-                    Monsters.WolflordGhoul = new Monsters("Wolflord Ghoul", 140, 12, 5);
+                    Monsters.WolflordGhoul = new Monsters("WOLFLORD GHOUL", 140, 12, 5, 8);
                     monster = Monsters.WolflordGhoul;
                     Console.WriteLine("You should ready yourself for a COMBAT ENCOUNTER.");
                     Console.WriteLine("\nPress any key to continue.");
+                    CurrentMonsterBoss = true;
                     string input3 = Console.ReadLine();
                     switch (input3)
                     {
