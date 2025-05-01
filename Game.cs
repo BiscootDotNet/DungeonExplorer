@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CodeDom;
+using System.Diagnostics.Eventing.Reader;
 using System.Media;
 using System.Xml.Linq;
 using System.Xml.Schema;
@@ -18,6 +19,7 @@ namespace DungeonExplorer
         public bool SwordGot = false;  //tracks if the player has collected the sword.
         public bool SwordEquipped = false;  //tracks if the player has equipped the sword.
         public bool BossRoom = false;  //tracks if the player has accessed the boss room.
+        public bool HasEnraged = false;  //tracks if the boss has enraged.
 
         public Game()
         {
@@ -33,7 +35,7 @@ namespace DungeonExplorer
             Console.WriteLine("Welcome to Dungeon Explorer!");
             Console.WriteLine("What is your name, explorer?");
             string Name = Console.ReadLine();
-            player = new Player(Name, 105, 5, 0);  //initializes the player object with the player's inputted name and health.
+            player = new Player(Name, 105, 5, 0, 5);  //initializes the player object with the player's inputted name and health.
 
 
             bool playing = true;  //boolean variable to control the game loop.
@@ -406,6 +408,7 @@ namespace DungeonExplorer
                         player.RemoveItem("DAGGER");
                         Console.WriteLine("Inside, however, lies a SHARP BLADE, which you take as its successor, as well as 1x LRG Health Potion");
                         Console.WriteLine("This blade feels as though it will be strong at COUNTERING surprise or follow-up attacks.");
+                        Console.WriteLine("(\nThe SHARP BLADE can counter follow-up attacks from the boss, and will also apply BLEED to enemies, dealing additional DMG.)");
                         Console.WriteLine("\nSHARP BLADE added to your inventory.");
                         Console.WriteLine("1x LRG Health Potion added to your inventory.");
                         player.PickUpItem("SHARP BLADE");
@@ -473,14 +476,14 @@ namespace DungeonExplorer
         public void CombatEncounter()  //a function which handles the player's encounter with a monster.
         {
             Console.Clear();
-            Console.WriteLine("\nA " + monster.Name + " appears!");
+            Console.WriteLine(monster.Name + " appears!");
             player.AttackPower = player.AttackPower - monster.Defence;  //reduces the player's attack power by the monster's defence.
 
             while (player.Health  > 0 && monster.Health > 0)  //while loop to keep the combat encounter running until either the player or monster is dead.
             {
                 Console.WriteLine("\nYour health: " + player.Health);
                 Console.WriteLine(monster.Name + "'s health: " + monster.Health);
-                Console.WriteLine("What would you like to do?");
+                Console.WriteLine("\nWhat would you like to do?");
                 Console.WriteLine("1. Attack   2. Equip item   3. Use a potion   4. Flee.");
                 string input = Console.ReadLine();
                 switch (input)
@@ -521,18 +524,34 @@ namespace DungeonExplorer
                 }
                 else if (monster.Health <= 0)
                 {
-                    Console.WriteLine("You have defeated " + monster.Name + "!");
-                    Console.WriteLine("you regain 10 health from a sigh of relief.");
-                    player.Health = player.Health + 10;
+                    Console.WriteLine("\nYou have defeated " + monster.Name + "!");
+                    Console.WriteLine("you regain 15 health from a sigh of relief.");
+                    player.Health = player.Health + 15;
                     //monster = null;  //sets the monster to null, indicating it has been defeated.
+                    if (monster.Health <=0 && CurrentMonsterBoss)
+                    {
+                        Console.WriteLine("\nWith the boss now slain, its allies too dissipate into the cobble ground.");
+                        Console.WriteLine("An array of golden loot scattered around the arena room, as though a reward.");
+                        Console.WriteLine("And as a ladder appears from above gleaming with sunlight..");
+                        Console.WriteLine("Here ends the journey of " + player.Name + ", victorious.");
+                        Console.WriteLine("Thank you for playing!");
+                        Console.WriteLine("\nType any key to exit.");
+                        string input2 = Console.ReadLine();
+                        switch (input2)
+                        {
+                            default:
+                                Environment.Exit(0);
+                                break;
+                        }
+                    }
 
 
                     if (Room.currentRoom != Room.RightMonsterRoom)
                     {
                         Console.WriteLine("\nThe MONSTRO GHOUL dissipates into the ground, leaving a STURDY HELMET behind");
                         Console.WriteLine("You pick up the STURDY HELMET.");
-                        Console.WriteLine(player.Name + " gained +2 DEF");
-                        player.Defence = player.Defence + 2;
+                        Console.WriteLine(player.Name + " gained +3 DEF");
+                        player.Defence = player.Defence + 3;
                         Console.WriteLine("With the enemy now disregarded, and the helmet collected, a distant spiritual voice whispers through the walls of the room");
                         Console.WriteLine("Near where the enemy first stood now appears a doorway of sorts, and with no exit elsewhere, it only seems logical to proceed");
                         Console.WriteLine("Type any key to continue.");
@@ -548,18 +567,32 @@ namespace DungeonExplorer
                     }
 
                 }
-                if (CurrentMonsterBoss == true && monster.Health <=60)
+                if (CurrentMonsterBoss && monster.Health <= 60 && !HasEnraged)
+                {
+                    HasEnraged = true;
+                    Console.WriteLine("\n" + monster.Name + " is enraged. ATK & DEF ARE increased!.");
+                    Console.WriteLine(monster.Name + " launches an additional follow-up attack!");
+                    Monsters.WolflordGhoul.Attackpower = 15;
+                    Monsters.WolflordGhoul.Defence = 9;
+                    monster.FUAattackPlayer(player);
+                    Console.Write(monster.Defence);
+                    if (SwordEquipped == true)
+                    {
+                        Console.WriteLine("\nWith the blade equipped, you successfully counter " + monster.Name + "'s follow-up ATK, mitigating some DMG!");
+                        player.Health = player.Health + 6;
+                        player.PlayerCounter(monster);
+                    }
+                }
+                else if (CurrentMonsterBoss && monster.Health <= 60 && HasEnraged)
                 {
                     Console.WriteLine("\n" + monster.Name + " is enraged. ATK, DEF & HP is increased!.");
-                    Console.WriteLine(monster.Name + " launches an additional follow-up attack!");
-                    Monsters.WolflordGhoul.Attackpower = 16;
-                    Monsters.WolflordGhoul.Defence = 8;
+                    //Console.WriteLine("should only show after enrage " + monster.Defence);
                     monster.FUAattackPlayer(player);
                     if (SwordEquipped == true)
                     {
                         Console.WriteLine("\nWith the blade equipped, you successfully counter " + monster.Name + "'s follow-up ATK, mitigating some DMG!");
                         player.Health = player.Health + 5;
-                        monster.TakeDamage(player.AttackPower);
+                        player.PlayerCounter(monster);
                     }
                 }
             }
@@ -607,7 +640,8 @@ namespace DungeonExplorer
                     else if (SwordGot == true)
                     {
                         Console.WriteLine("\nYou equip the SHARP BLADE");
-                        player.AttackPower = 17;
+                        player.AttackPower = 19;
+                        monster.Health = monster.Health - 2;
                         Console.WriteLine("Press any key to continue.");
                         SwordEquipped = true;
                         string input2 = Console.ReadLine();
@@ -659,6 +693,7 @@ namespace DungeonExplorer
                     player.Health = player.Health + 28;
                     player.RemoveItem("SML Health Potion");
                     Console.WriteLine("You use the SML Health Potion.");
+                    monster.Attack(player);
                     Console.WriteLine("Press any key to continue.");
                     if (player.Health > 105)
                     {
@@ -673,9 +708,10 @@ namespace DungeonExplorer
                     }
                     break;
                 case "LRG Health Potion":
-                    player.Health = player.Health + 45;
+                    player.Health = player.Health + 55;
                     player.RemoveItem("LRG Health Potion");
                     Console.WriteLine("You use the LRG Health Potion.");
+                    monster.Attack(player);
                     Console.WriteLine("Press any key to continue.");
                     if (player.Health > 105)
                     {
@@ -702,7 +738,9 @@ namespace DungeonExplorer
         public void InBossRoom()  //a function which handles the player's choice to enter the boss room.
         {
             Console.Clear();
-            Console.WriteLine("\nYou proceed through the doorway.");
+            currentRoom = Room.BossRoom;  //sets the current room to the boss room.
+            Room.BossRoom = new Room("BOSS ROOM", "You are standing in a dimly lit stone room, with a large monster limping by the back wall.");
+            Console.WriteLine("You proceed through the doorway.");
             Console.WriteLine("Sat idly next to the door lies a crate. open it?");
             Console.WriteLine("1. Yes");
             Console.WriteLine("2. No");
@@ -713,9 +751,9 @@ namespace DungeonExplorer
                     Console.WriteLine("\nYou open the crate, and inside lays a CROSSBOW.");
                     Console.WriteLine("CROSSBOW added to your inventory.");
                     player.PickUpItem("CROSSBOW");
-                    Console.WriteLine("The CROSSBOW can ignore a certain sum of enemy defence.");
-                    Console.WriteLine("Such a powerful weapon filled with plenty ammunition, sat here idly, why?");
-                    Console.WriteLine("\nWith the whispers still murmuring, you observe the remainder of the room, noticing a group of the previously encountered MONSTRO GHOULS.");
+                    Console.WriteLine("\n(The CROSSBOW is a powerful weapon that ignores a small sum of enemies DEF stat)");
+                    Console.WriteLine("\nSuch a powerful weapon filled with plenty ammunition, sat here idly, why?");
+                    Console.WriteLine("With the whispers still murmuring, you observe the remainder of the room, noticing a group of the previously encountered MONSTRO GHOULS.");
                     Console.WriteLine("They appear to be staring towards the ceiling, where hangs a much larger-looking variant of these creatures - clearly this is their boss.");
                     Monsters.WolflordGhoul = new Monsters("WOLFLORD GHOUL", 140, 12, 5, 8);  //initialises the boss monster.
                     monster = Monsters.WolflordGhoul;  //sets the monster to the boss monster.
