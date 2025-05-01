@@ -575,7 +575,6 @@ namespace DungeonExplorer
                     Monsters.WolflordGhoul.Attackpower = 15;
                     Monsters.WolflordGhoul.Defence = 9;
                     monster.FUAattackPlayer(player);
-                    Console.Write(monster.Defence);
                     if (SwordEquipped == true)
                     {
                         Console.WriteLine("\nWith the blade equipped, you successfully counter " + monster.Name + "'s follow-up ATK, mitigating some DMG!");
